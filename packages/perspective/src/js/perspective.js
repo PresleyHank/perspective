@@ -966,20 +966,14 @@ export default function(Module) {
         const aggregates = config.aggregates || {};
         const schema = this._schema(true);
 
-        if (config.columns === undefined && config.aggregate === undefined) {
+        if (config.columns === undefined) {
+            // If columns are not provided, use all columns
             config.columns = this._columns(true);
         }
 
-        if (config.columns) {
-            if (config.aggregate) {
-                throw new Error(`Duplicate configuration parameter "aggregate" and "columns"`);
-            }
-            config.aggregate = [];
-            for (const col of config.columns) {
-                config.aggregate.push({column: col, op: aggregates[col] || defaults.AGGREGATE_DEFAULTS[schema[col]]});
-            }
-        } else {
-            config.columns = config.aggregate.map(x => (Array.isArray(x.column) ? x.column[0] : x.column));
+        config.aggregates = [];
+        for (const col of config.columns) {
+            config.aggregates.push({column: col, op: aggregates[col] || defaults.AGGREGATE_DEFAULTS[schema[col]]});
         }
 
         if (config.sort) {
@@ -987,16 +981,13 @@ export default function(Module) {
                 const name = sort[0];
                 if (config.columns.indexOf(name) === -1) {
                     if (config.column_pivots.indexOf(name) > -1 || config.row_pivots.indexOf(name) > -1) {
-                        config.aggregate.push({column: name, op: "unique"});
+                        config.aggregates.push({column: name, op: "unique"});
                     } else {
-                        config.aggregate.push({column: name, op: aggregates[name] || defaults.AGGREGATE_DEFAULTS[schema[name]]});
+                        config.aggregates.push({column: name, op: aggregates[name] || defaults.AGGREGATE_DEFAULTS[schema[name]]});
                     }
                 }
             }
         }
-
-        config.aggregates = config.aggregate;
-        config.aggregate = undefined;
 
         let name = Math.random() + "";
         let sides;
