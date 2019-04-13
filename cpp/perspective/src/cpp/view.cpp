@@ -474,11 +474,10 @@ std::int32_t
 View<CTX_T>::_num_hidden_cols() {
     std::int32_t hidden = 0;
     for (const t_sortspec& sort : m_sort) {
-
     }
     return hidden;
-}
- */
+} */
+
 template <typename CTX_T>
 std::string
 View<CTX_T>::_map_aggregate_types(

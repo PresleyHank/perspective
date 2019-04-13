@@ -971,11 +971,13 @@ export default function(Module) {
             config.columns = this._columns(true);
         }
 
+        // could move into c++?
         for (const col of config.columns) {
             config.aggregates[col] = config.aggregates[col] || defaults.AGGREGATE_DEFAULTS[schema[col]];
         }
 
         if (config.sort) {
+            // moving into c++ is more complicated here
             for (const sort of config.sort) {
                 const name = sort[0];
                 if (config.columns.indexOf(name) === -1) {
