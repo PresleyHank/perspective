@@ -124,7 +124,7 @@ module.exports = perspective => {
             });
             var answer = [{__ROW_PATH__: [], x: 3}, {__ROW_PATH__: [1], x: 2.5}, {__ROW_PATH__: [2], x: 4}];
             let result = await view.to_json();
-            expect(answer).toEqual(result);
+            expect(result).toEqual(answer);
             view.delete();
             table.delete();
         });
@@ -138,7 +138,7 @@ module.exports = perspective => {
             });
             var answer = [{__ROW_PATH__: [], x: 2.5}, {__ROW_PATH__: [1], x: 2}, {__ROW_PATH__: [2], x: 4}];
             let result = await view.to_json();
-            expect(answer).toEqual(result);
+            expect(result).toEqual(answer);
             view.delete();
             table.delete();
         });
@@ -153,7 +153,7 @@ module.exports = perspective => {
             });
             var answer = [{__ROW_PATH__: [], x: 2.5}, {__ROW_PATH__: [1], x: 2}, {__ROW_PATH__: [2], x: 4}];
             let result = await view.to_json();
-            expect(answer).toEqual(result);
+            expect(result).toEqual(answer);
             view.delete();
             table.delete();
         });
@@ -166,7 +166,7 @@ module.exports = perspective => {
             });
             var answer = [{__ROW_PATH__: [], x: 9}, {__ROW_PATH__: [1], x: 5}, {__ROW_PATH__: [2], x: 4}];
             let result = await view.to_json();
-            expect(answer).toEqual(result);
+            expect(result).toEqual(answer);
             view.delete();
             table.delete();
         });
@@ -181,7 +181,7 @@ module.exports = perspective => {
             });
             var answer = [{__ROW_PATH__: [], x: 3}, {__ROW_PATH__: [1], x: 2.5}, {__ROW_PATH__: [2], x: 4}];
             let result = await view.to_json();
-            expect(answer).toEqual(result);
+            expect(result).toEqual(answer);
             view.delete();
             table.delete();
         });

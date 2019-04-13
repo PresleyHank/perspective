@@ -32,6 +32,7 @@ View<CTX_T>::View(t_pool* pool, std::shared_ptr<CTX_T> ctx, std::shared_ptr<t_gn
     }
 
     m_aggregates = m_config.get_aggregates();
+    m_columns = m_config.get_column_names();
     m_filter = m_config.get_fterms();
     m_sort = m_config.get_sortspecs();
 }

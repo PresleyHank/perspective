@@ -202,48 +202,19 @@ namespace binding {
     std::vector<t_aggspec>
     _get_aggspecs(t_schema schema, std::string separator, bool column_only, val j_aggs) {
         std::vector<t_aggspec> aggspecs;
-
-        if (j_aggs.typeOf().as<std::string>() == "object") {
-            // Construct aggregates from array
-            std::vector<val> aggs = vecFromArray<val, val>(j_aggs);
-
-            for (auto idx = 0; idx < aggs.size(); ++idx) {
-                val agg = aggs[idx];
-                val col = agg["column"];
-                std::string col_name;
-                std::string agg_op = agg["op"].as<std::string>();
+        val agg_columns = val::global("Object").call<val>("keys", j_aggs);
+        std::vector<std::string> aggs = vecFromArray<val, std::string>(agg_columns);
+        if (aggs.size() > 0) {
+            // Construct aggregates from config object
+            for (const std::string& agg_column : aggs) {
+                std::string agg_op = j_aggs[agg_column].as<std::string>();
                 std::vector<t_dep> dependencies;
 
                 if (column_only) {
                     agg_op = "any";
                 }
 
-                if (col.typeOf().as<std::string>() == "string") {
-                    col_name = col.as<std::string>();
-                    dependencies.push_back(t_dep(col_name, DEPTYPE_COLUMN));
-                } else {
-                    std::vector<val> deps = vecFromArray<val, val>(col);
-
-                    if ((agg_op != "weighted mean" && deps.size() != 1)
-                        || (agg_op == "weighted mean" && deps.size() != 2)) {
-                        PSP_COMPLAIN_AND_ABORT(agg_op + " has incorrect arity ("
-                            + std::to_string(deps.size()) + ") for column dependencies.");
-                    }
-
-                    for (auto didx = 0; didx < deps.size(); ++didx) {
-                        if (!hasValue(deps[didx])) {
-                            continue;
-                        }
-                        std::string dep = deps[didx].as<std::string>();
-                        dependencies.push_back(t_dep(dep, DEPTYPE_COLUMN));
-                    }
-
-                    col_name = deps[0].as<std::string>();
-
-                    if (hasValue(agg["name"])) {
-                        col_name = agg["name"].as<std::string>();
-                    }
-                }
+                dependencies.push_back(t_dep(agg_column, DEPTYPE_COLUMN));
 
                 t_aggtype aggtype = str_to_aggtype(agg_op);
 
@@ -252,9 +223,9 @@ namespace binding {
                         dependencies.push_back(t_dep("psp_pkey", DEPTYPE_COLUMN));
                     }
                     aggspecs.push_back(t_aggspec(
-                        col_name, col_name, aggtype, dependencies, SORTTYPE_ASCENDING));
+                        agg_column, agg_column, aggtype, dependencies, SORTTYPE_ASCENDING));
                 } else {
-                    aggspecs.push_back(t_aggspec(col_name, aggtype, dependencies));
+                    aggspecs.push_back(t_aggspec(agg_column, aggtype, dependencies));
                 }
             }
         } else {
@@ -1618,12 +1589,7 @@ namespace binding {
         }
 
         aggregates = _get_aggspecs(schema, separator, column_only, j_aggregates);
-
-        if (aggregates.size() > 0) {
-            columns = _get_aggregate_names(aggregates);
-        } else {
-            columns = vecFromArray<val, std::string>(j_columns);
-        }
+        columns = vecFromArray<val, std::string>(j_columns);
 
         if (hasValue(j_filter)) {
             filters = _get_fterms(schema, date_parser, j_filter);
